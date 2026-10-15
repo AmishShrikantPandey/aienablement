@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seaview Retreat – Book a Room</title>
+  <style>
+    :root {
+      --primary: #1f6f8b;
+      --primary-dark: #164e63;
+      --accent: #f4a261;
+      --bg: #f6f8fa;
+      --card: #ffffff;
+      --text: #1f2933;
+      --muted: #6b7280;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+
+    header { background: var(--card); border-bottom: 1px solid var(--border); }
+    .nav { max-width: 1100px; margin: auto; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+    .nav a { margin-left: 20px; color: var(--muted); text-decoration: none; }
+    .nav a:hover { color: var(--primary); }
+
+    .hero {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff; text-align: center; padding: 60px 16px 100px;
+    }
+    .hero h1 { font-size: 2.2rem; margin-bottom: 8px; }
+    .hero p { opacity: 0.9; }
+
+    main { max-width: 1100px; margin: -60px auto 40px; padding: 0 16px; }
+
+    .card { background: var(--card); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 24px; }
+
+    .search { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; align-items: end; }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+    input, select {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: 1rem; font-family: inherit;
+    }
+    input:focus, select:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+    .btn {
+      background: var(--accent); color: #1f2933; border: none; padding: 12px 20px;
+      border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%;
+    }
+    .btn:hover { filter: brightness(0.95); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    h2 { margin: 36px 0 16px; }
+
+    .rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .room { padding: 0; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: border-color .2s, transform .2s; }
+    .room:hover { transform: translateY(-3px); }
+    .room.selected { border-color: var(--primary); }
+    .room-img { height: 150px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+    .room-body { padding: 16px; }
+    .room-body h3 { margin-bottom: 4px; }
+    .room-body ul { list-style: none; color: var(--muted); font-size: 0.9rem; margin: 8px 0; }
+    .price { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
+    .price span { font-size: 0.85rem; font-weight: 400; color: var(--muted); }
+
+    .checkout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    .summary-row { display: flex; justify-content: space-between; padding: 6px 0; color: var(--muted); }
+    .summary-row.total { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 12px; color: var(--text); font-weight: 700; font-size: 1.1rem; }
+    .summary h3 { margin-bottom: 12px; }
+    .error { color: #c0392b; font-size: 0.9rem; margin-top: 8px; min-height: 1.2em; }
+
+    .confirm { display: none; text-align: center; padding: 40px 24px; }
+    .confirm .tick { font-size: 3rem; }
+    .confirm h2 { margin: 12px 0 8px; }
+    .ref { font-family: monospace; background: var(--bg); padding: 4px 10px; border-radius: 6px; }
+
+    footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 24px; }
+
+    @media (max-width: 720px) {
+      .checkout, .form-grid { grid-template-columns: 1fr; }
+      .nav a { display: none; }
+      .hero h1 { font-size: 1.7rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="logo">🌊 Seaview Retreat</div>
+      <nav><a href="#rooms">Rooms</a><a href="#book">Book</a><a href="#">Contact</a></nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Your seaside escape awaits</h1>
+    <p>A dummy hotel booking page for practice. No real bookings are made.</p>
+  </section>
+
+  <main>
+    <div id="booking-flow">
+      <!-- Step 1: dates & guests -->
+      <div class="card search">
+        <div>
+          <label for="checkin">Check-in</label>
+          <input type="date" id="checkin">
+        </div>
+        <div>
+          <label for="checkout">Check-out</label>
+          <input type="date" id="checkout">
+        </div>
+        <div>
+          <label for="guests">Guests</label>
+          <select id="guests">
+            <option value="1">1 guest</option>
+            <option value="2" selected>2 guests</option>
+            <option value="3">3 guests</option>
+            <option value="4">4 guests</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Step 2: choose a room -->
+      <h2 id="rooms">Choose your room</h2>
+      <div class="rooms" id="room-list"></div>
+
+      <!-- Step 3: guest details & summary -->
+      <h2 id="book">Guest details</h2>
+      <div class="checkout">
+        <form class="card form-grid" id="guest-form" novalidate>
+          <div>
+            <label for="first">First name</label>
+            <input id="first" required>
+          </div>
+          <div>
+            <label for="last">Last name</label>
+            <input id="last" required>
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+          </div>
+          <div>
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone">
+          </div>
+          <div class="full">
+            <label for="notes">Special requests (optional)</label>
+            <input id="notes" placeholder="e.g. late check-in, extra pillows">
+          </div>
+        </form>
+
+        <aside class="card summary">
+          <h3>Booking summary</h3>
+          <div class="summary-row"><span>Room</span><span id="s-room">—</span></div>
+          <div class="summary-row"><span>Nights</span><span id="s-nights">0</span></div>
+          <div class="summary-row"><span>Guests</span><span id="s-guests">2</span></div>
+          <div class="summary-row"><span>Subtotal</span><span id="s-subtotal">$0</span></div>
+          <div class="summary-row"><span>Taxes (12%)</span><span id="s-tax">$0</span></div>
+          <div class="summary-row total"><span>Total</span><span id="s-total">$0</span></div>
+          <p class="error" id="error"></p>
+          <button class="btn" id="book-btn">Confirm booking</button>
+        </aside>
+      </div>
+    </div>
+
+    <!-- Step 4: confirmation -->
+    <div class="card confirm" id="confirmation">
+      <div class="tick">✅</div>
+      <h2>Booking confirmed!</h2>
+      <p id="confirm-text"></p>
+      <p style="margin-top:12px">Reference: <span class="ref" id="ref"></span></p>
+      <button class="btn" style="width:auto;margin-top:24px" onclick="location.reload()">Make another booking</button>
+    </div>
+  </main>
+
+  <footer>© 2026 Seaview Retreat (dummy). Built for Git/GitHub practice.</footer>
+
+  <script>
+    const ROOMS = [
+      { id: "standard", name: "Standard Room",  icon: "🛏️", color: "#e0f2fe", price: 89,  maxGuests: 2, features: ["Queen bed", "City view", "Free Wi-Fi"] },
+      { id: "deluxe",   name: "Deluxe Sea View", icon: "🌅", color: "#fef3c7", price: 149, maxGuests: 3, features: ["King bed", "Balcony with sea view", "Breakfast included"] },
+      { id: "suite",    name: "Family Suite",   icon: "🏖️", color: "#dcfce7", price: 229, maxGuests: 4, features: ["2 bedrooms", "Living area", "Breakfast & airport pickup"] }
+    ];
+    const TAX = 0.12;
+    let selectedRoom = null;
+
+    const $ = id => document.getElementById(id);
+    const money = n => "$" + n.toFixed(2);
+
+    // Default dates: today → tomorrow
+    const today = new Date();
+    const iso = d => d.toISOString().split("T")[0];
+    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+    $("checkin").value = iso(today);
+    $("checkin").min = iso(today);
+    $("checkout").value = iso(tomorrow);
+    $("checkout").min = iso(tomorrow);
+
+    function renderRooms() {
+      const guests = +$("guests").value;
+      $("room-list").innerHTML = ROOMS.map(r => {
+        const tooSmall = guests > r.maxGuests;
+        return `
+          <div class="card room ${selectedRoom === r.id ? "selected" : ""}" data-id="${r.id}"
+               style="${tooSmall ? "opacity:.45;pointer-events:none" : ""}">
+            <div class="room-img" style="background:${r.color}">${r.icon}</div>
+            <div class="room-body">
+              <h3>${r.name}</h3>
+              <ul>${r.features.map(f => `<li>✓ ${f}</li>`).join("")}<li>👤 Up to ${r.maxGuests} guests</li></ul>
+              <div class="price">$${r.price} <span>/ night</span></div>
+            </div>
+          </div>`;
+      }).join("");
+
+      document.querySelectorAll(".room").forEach(el =>
+        el.addEventListener("click", () => { selectedRoom = el.dataset.id; renderRooms(); updateSummary(); })
+      );
+    }
+
+    function nights() {
+      const diff = (new Date($("checkout").value) - new Date($("checkin").value)) / 86400000;
+      return diff > 0 ? diff : 0;
+    }
+
+    function updateSummary() {
+      const room = ROOMS.find(r => r.id === selectedRoom);
+      const n = nights();
+      const subtotal = room ? room.price * n : 0;
+      $("s-room").textContent = room ? room.name : "—";
+      $("s-nights").textContent = n;
+      $("s-guests").textContent = $("guests").value;
+      $("s-subtotal").textContent = money(subtotal);
+      $("s-tax").textContent = money(subtotal * TAX);
+      $("s-total").textContent = money(subtotal * (1 + TAX));
+    }
+
+    $("checkin").addEventListener("change", () => {
+      const next = new Date($("checkin").value); next.setDate(next.getDate() + 1);
+      $("checkout").min = iso(next);
+      if ($("checkout").value <= $("checkin").value) $("checkout").value = iso(next);
+      updateSummary();
+    });
+    $("checkout").addEventListener("change", updateSummary);
+    $("guests").addEventListener("change", () => {
+      const room = ROOMS.find(r => r.id === selectedRoom);
+      if (room && +$("guests").value > room.maxGuests) selectedRoom = null;
+      renderRooms(); updateSummary();
+    });
+
+    $("book-btn").addEventListener("click", () => {
+      const err = $("error");
+      const email = $("email").value.trim();
+      if (!selectedRoom) return err.textContent = "Please select a room.";
+      if (nights() < 1) return err.textContent = "Check-out must be after check-in.";
+      if (!$("first").value.trim() || !$("last").value.trim()) return err.textContent = "Please enter your full name.";
+      if (!/^\S+@\S+\.\S+$/.test(email)) return err.textContent = "Please enter a valid email.";
+      err.textContent = "";
+
+      const room = ROOMS.find(r => r.id === selectedRoom);
+      $("ref").textContent = "SV-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+      $("confirm-text").textContent =
+        `Thanks ${$("first").value.trim()}! Your ${room.name} is reserved for ${nights()} night(s) ` +
+        `from ${$("checkin").value} to ${$("checkout").value}. Total: ${$("s-total").textContent}. ` +
+        `(This is a dummy page, so no email will actually be sent to ${email}.)`;
+      $("booking-flow").style.display = "none";
+      $("confirmation").style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    renderRooms();
+    updateSummary();
+  </script>
+</body>
+</html>
